@@ -40,10 +40,16 @@ int classify(Point dataset[], int n, int k, Point p){
         int dif = 0;
         dif += pow(abs(p.enemies_our_side - dataset[i].enemies_our_side), sigma);
         dif += pow(abs(p.allies_our_side - dataset[i].allies_our_side), sigma);
-        dif += pow(abs(p.our_finalizations - dataset[i].our_finalizations), sigma);
-        dif += pow(abs(p.their_finalizations - dataset[i].their_finalizations), sigma);
-        dif += pow(abs(p.our_ball_possession - dataset[i].our_ball_possession), sigma);
-        dif += pow(abs(p.their_ball_possession - dataset[i].their_ball_possession), sigma);
+        dif += pow(abs(p.allies_finalizations - dataset[i].allies_finalizations), sigma);
+        dif += pow(abs(p.enemies_finalizations - dataset[i].enemies_finalizations), sigma);
+        dif += pow(abs(p.allies_ballpossession - dataset[i].allies_ballpossession), sigma);
+        dif += pow(abs(p.enemies_ballpossession - dataset[i].enemies_ballpossession), sigma);
+        dif += pow(abs(p.enemies_passes - dataset[i].enemies_passes), sigma);
+        dif += pow(abs(p.allies_passes - dataset[i].allies_passes), sigma);
+        for(int j = 0; j < qt_robosTime; j++){
+            dif += pow(abs(p.allies_velocity[j] - dataset[i].allies_velocity[j]), sigma);
+            dif += pow(abs(p.enemies_velocity[j] - dataset[i].enemies_velocity[j]), sigma);
+        }
         dataset[i].distance = pow(dif, 1.0/sigma); // mintowski distance
     }
 
@@ -65,10 +71,20 @@ int classify(Point dataset[], int n, int k, Point p){
 void printAttributes(Point a, bool isDataset){
     cout << "Allies our side: " << a.allies_our_side << endl;
     cout << "Enemies our side: " << a.enemies_our_side << endl;
-    cout << "Our ball possession: " << a.our_ball_possession << endl;
-    cout << "Their ball possession: " << a.their_ball_possession << endl;
-    cout << "Our finalizations: " << a.our_finalizations << endl;
-    cout << "Their finalizations: " << a.their_finalizations << endl;
+    cout << "Our ball possession: " << a.allies_ballpossession << endl;
+    cout << "Their ball possession: " << a.enemies_ballpossession << endl;
+    cout << "Our finalizations: " << a.allies_finalizations << endl;
+    cout << "Their finalizations: " << a.enemies_finalizations << endl;
+    cout << "Our passes: " << a.enemies_passes << endl;
+    cout << "Their passes: " << a.allies_passes << endl;
+
+    for(int j = 0; j < qt_robosTime; j++){
+        cout << "Allie Robot " << j << " speed: " << a.allies_velocity[j] << endl;
+    }
+    for(int j = 0; j < qt_robosTime; j++){
+        cout << "Enemie Robot " << j << " speed: " << a.enemies_velocity[j] << endl;
+    }
+    
     if(isDataset){
         cout << "Distance: " << a.distance << endl;
         cout << "Scale: " << a.agressive_scale << endl;
@@ -85,12 +101,19 @@ int main(){
 
     // generating randomic points
     for(int i = 0; i < n; i++){
-        arr[i].allies_our_side = rng() % 6;
-        arr[i].enemies_our_side = rng() % 6;
-        arr[i].our_ball_possession = rng() % 100;
-        arr[i].their_ball_possession = abs(100 - arr[i].our_ball_possession);
-        arr[i].our_finalizations = rng() % 10;
-        arr[i].their_finalizations = rng() % 10;
+        arr[i].allies_our_side = rng() % qt_robosTime; 
+        arr[i].enemies_our_side = rng() % qt_robosTime;
+        arr[i].allies_ballpossession = rng() % 100;
+        arr[i].enemies_ballpossession = abs(100 - arr[i].allies_ballpossession);
+        arr[i].allies_finalizations = rng() % 10;
+        arr[i].enemies_finalizations = rng() % 10;
+        arr[i].allies_passes = rng() % 30;
+        arr[i].enemies_passes = rng() % 30;
+
+        for(int j = 0; j < qt_robosTime; j++){
+            arr[i].allies_velocity[j] = rng() % 10;
+            arr[i].enemies_velocity[j] = rng() % 10;
+        }
     }
 
     // setting the scales to test
@@ -103,12 +126,19 @@ int main(){
 
     // generating a random configuration to test
     Point randomPoint;
-    randomPoint.allies_our_side = rng() % 6;
-    randomPoint.enemies_our_side = rng() % 6;
-    randomPoint.our_ball_possession = rng() % 100;
-    randomPoint.their_ball_possession = abs(100 -randomPoint.our_ball_possession);
-    randomPoint.our_finalizations = rng() % 10;
-    randomPoint.their_finalizations = rng() % 10;
+    randomPoint.allies_our_side = rng() % qt_robosTime; 
+    randomPoint.enemies_our_side = rng() % qt_robosTime;
+    randomPoint.allies_ballpossession = rng() % 100;
+    randomPoint.enemies_ballpossession = abs(100 - randomPoint.allies_ballpossession);
+    randomPoint.allies_finalizations = rng() % 10;
+    randomPoint.enemies_finalizations = rng() % 10;
+    randomPoint.allies_passes = rng() % 30;
+    randomPoint.enemies_passes = rng() % 30;
+
+    for(int j = 0; j < qt_robosTime; j++){
+        randomPoint.allies_velocity[j] = rng() % 10;
+        randomPoint.enemies_velocity[j] = rng() % 10;
+    }
 
     int classification = classify(arr, n, k, randomPoint);
 
