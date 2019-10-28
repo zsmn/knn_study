@@ -1,4 +1,4 @@
-# Numerical Methods
+# KNN & PCA
 
 This project was designed for KNN and PCA Algorithm study 
 
